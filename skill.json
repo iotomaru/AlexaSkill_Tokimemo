@@ -2,15 +2,13 @@
   "manifest": {
     "publishingInformation": {
       "locales": {
-        "en-US": {
-          "summary": "A basic skill made from Alexa Skills Kit template",
+        "ja-JP": {
+          "summary": "",
           "examplePhrases": [
-            "Alexa open hello node",
-            "Alexa tell hello node hello",
-            "Alexa ask hello node say hello"
+            "アレクサ、時間メモを開いて",
           ],
-          "name": "hello node",
-          "description": "A basic skill made from Alexa Skills Kit template"
+          "name": "時間メモ2.0",
+          "description": ""
         }
       },
       "isAvailableWorldwide": true,

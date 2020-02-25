@@ -1,118 +1,147 @@
-// This sample demonstrates handling intents from an Alexa skill using the Alexa Skills Kit SDK (v2).
-// Please visit https://alexa.design/cookbook for additional examples on implementing slots, dialog management,
-// session persistence, api calls, and more.
-const Alexa = require('ask-sdk-core');
+// (1) モジュールを読み込む
+const Alexa = require('ask-sdk-core')
+require('date-utils');
 
+function getCurrentDateTime() {
+    let dt = new Date();
+    let year = dt.toFormat("YYYY");
+    let month = dt.toFormat("MM");
+    let day = dt.toFormat("DD");
+    let hour = dt.toFormat("HH24");
+    let minutes = dt.toFormat("MI");
+    let seconds = dt.toFormat("SS");
+    return {year, month, day, hour, minutes, seconds};
+}
+
+// (2) リクエストハンドラーを定義する
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
-      return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
+        return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
     },
     handle(handlerInput) {
-      const speechText = 'Welcome, you can say Hello or Help. Which would you like to try?';
-      return handlerInput.responseBuilder
-        .speak(speechText)
-        .reprompt(speechText)
-        .getResponse();
-    }
+        return handlerInput.responseBuilder
+            .speak('はい、どうぞ。')
+            .reprompt('はい、どうぞ')
+            .getResponse();
+    },
 };
-const HelloWorldIntentHandler = {
+
+const RecordItemIntentHandler = {
     canHandle(handlerInput) {
-      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-        && handlerInput.requestEnvelope.request.intent.name === 'HelloWorldIntent';
+        return handlerInput.requestEnvelope.request.type == 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name == 'RecordItemIntent';
     },
     handle(handlerInput) {
-      const speechText = 'Hello World!';
-      return handlerInput.responseBuilder
-        .speak(speechText)
-        //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
-        .getResponse();
-    }
+        const {year, month, day, hour, minutes, seconds} = getCurrentDateTime();
+        const memoContent = handlerInput.requestEnvelope.request.intent.slots.Item.value;
+        const speechText = hour + '時' + minutes +'分に' + memoContent + 'とおっしゃいました';
+        const cardText = month + '月' + day + '日' + hour + '時' + minutes + '分：' + memoContent;
+
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .withSimpleCard('時間メモ', cardText)
+            .getResponse();
+    },
 };
+
+const ReadItemsIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type == 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name == 'ReadItemsIntent';
+    },
+    handle(handlerInput) {
+        const speechText = 'この応答はまだ未完成です';
+
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .getResponse();
+    },
+};
+
+const DeleteAllItemsIntentHander = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type == 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name == 'DeleteAllItemsIntent';
+    },
+    handle(handlerInput) {
+        const speechText = 'この応答はまだ未完成です';
+
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .getResponse();
+    },
+};
+
 const HelpIntentHandler = {
     canHandle(handlerInput) {
-      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-        && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
     },
     handle(handlerInput) {
-      const speechText = 'You can say hello to me! How can I help?';
-     
-      return handlerInput.responseBuilder
-        .speak(speechText)
-        .reprompt(speechText)
-        .getResponse();
-    }
+        const speechText = 'You can say hello to me!';
+
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .withSimpleCard('Hello world', speechText)
+            .getResponse();
+    },
 };
+
 const CancelAndStopIntentHandler = {
     canHandle(handlerInput) {
-      return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-        && (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent'
-          || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent'
+            || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
     },
-   handle(handlerInput) {
-      const speechText = 'Goodbye!';
-      return handlerInput.responseBuilder
-        .speak(speechText)
-        .getResponse();
-    }
+    handle(handlerInput) {
+        const speechText = 'Goodbye!';
+  
+        return handlerInput.responseBuilder
+            .speak(speechText)
+            .withSimpleCard('Hello World', speechText)
+            .getResponse();
+    },
 };
+  
 const SessionEndedRequestHandler = {
     canHandle(handlerInput) {
-      return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
+        return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
     },
     handle(handlerInput) {
-      // Any cleanup logic goes here.
-      return handlerInput.responseBuilder.getResponse();
-    }
-};
+        console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
 
-// The intent reflector is used for interaction model testing and debugging.
-// It will simply repeat the intent the user said. You can create custom handlers
-// for your intents by defining them above, then also adding them to the request
-// handler chain below.
-const IntentReflectorHandler = {
-    canHandle(handlerInput) {
-      return handlerInput.requestEnvelope.request.type === 'IntentRequest';
+        return handlerInput.responseBuilder.getResponse();
     },
-    handle(handlerInput) {
-      const intentName = handlerInput.requestEnvelope.request.intent.name;
-      const speechText = `You just triggered ${intentName}`;
- 
-      return handlerInput.responseBuilder
-        .speak(speechText)
-        //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
-        .getResponse();
-   }
 };
-
-// Generic error handling to capture any syntax or routing errors. If you receive an error
-// stating the request handler chain is not found, you have not implemented a handler for
-// the intent being invoked or included it in the skill builder below.
+  
+// （3）エラーハンドラーを定義する
 const ErrorHandler = {
     canHandle() {
-      return true;
+        return true;
     },
     handle(handlerInput, error) {
-      console.log(`~~~~ Error handled: ${error.message}`);
-      const speechText = `Sorry, I couldn't understand what you said. Please try again.`;
-
-      return handlerInput.responseBuilder
-        .speak(speechText)
-        .reprompt(speechText)
-        .getResponse();
-    }
+        console.log(`Error handled: ${error.message}`);
+  
+        return handlerInput.responseBuilder
+            .speak('うまく聞き取れませんでした。')
+            .reprompt('もういちどお願いします。')
+            .getResponse();
+    },
 };
-
-// This handler acts as the entry point for your skill, routing all request and response
-// payloads to the handlers above. Make sure any new handlers or interceptors you've
-// defined are included below. The order matters - they're processed top to bottom.
-exports.handler = Alexa.SkillBuilders.custom()
-  .addRequestHandlers(
-    LaunchRequestHandler,
-    HelloWorldIntentHandler,
-    HelpIntentHandler,
-    CancelAndStopIntentHandler,
-    SessionEndedRequestHandler,
-    IntentReflectorHandler) // make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
-  .addErrorHandlers(
-    ErrorHandler)
-  .lambda();
+  
+// （4）Lambda 関数ハンドラーを定義する
+const skillBuilder = Alexa.SkillBuilders.custom();
+  
+exports.handler = skillBuilder
+    .addRequestHandlers(
+        LaunchRequestHandler,
+        RecordItemIntentHandler,
+        ReadItemsIntentHandler,
+        DeleteAllItemsIntentHander,
+        HelpIntentHandler,
+        CancelAndStopIntentHandler,
+        SessionEndedRequestHandler
+    )
+    .addErrorHandlers(ErrorHandler)
+    .lambda();

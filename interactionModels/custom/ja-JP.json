@@ -1,7 +1,7 @@
 {
     "interactionModel": {
         "languageModel": {
-            "invocationName": "hello node",
+            "invocationName": "じかんめも",
             "intents": [
                 {
                     "name": "AMAZON.CancelIntent",
@@ -16,16 +16,44 @@
                     "samples": []
                 },
                 {
-                    "name": "HelloWorldIntent",
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "RecordItemIntent",
+                    "slots": [
+                        {
+                            "name": "Item",
+                            "type": "AMAZON.SearchQuery"
+                        }
+                    ],
+                    "samples": [
+                        "{Item} と記録して",
+                        "{Item} とメモして",
+                        "{Item} をメモして",
+                        "{Item} を記録して"
+                    ]
+                },
+                {
+                    "name": "ReadItemsIntent",
                     "slots": [],
                     "samples": [
-                        "hello",
-                        "how are you",
-                        "say hi world",
-                        "say hi",
-                        "hi",
-                        "say hello world",
-                        "say hello"
+                        "メモを教えて",
+                        "メモを読み上げて",
+                        "記録内容を教えて",
+                        "記録内容を読み上げて"
+                    ]
+                },
+                {
+                    "name": "DeleteAllItemsIntent",
+                    "slots": [],
+                    "samples": [
+                        "記録内容を削除して",
+                        "メモを削除して",
+                        "記録を削除して",
+                        "メモを消して",
+                        "記録を消して",
+                        "記録内容を消して"
                     ]
                 }
             ],
